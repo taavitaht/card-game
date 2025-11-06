@@ -18,12 +18,6 @@ public class Card {
     private Long id;
     private String suit;
     private String rank;
-    private Integer power;
-
-    public Card(String suit, String rank, Integer power) {
-        this.suit = suit;
-        this.rank = rank;
-        this.power = power;
-    }
+    private int power;
 }
 
