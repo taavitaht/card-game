@@ -1,9 +1,9 @@
 package ee.taavi.card_game.service;
 
 import ee.taavi.card_game.entity.Card;
-import ee.taavi.card_game.entity.CardRank;
-import ee.taavi.card_game.entity.CardSuit;
-import ee.taavi.card_game.repository.CardRepository;
+//import ee.taavi.card_game.repository.CardRepository;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,23 +11,32 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Getter
+@Setter
 @Service
 public class GameService {
 
-    @Autowired
-    private CardRepository cardRepository;
+    //@Autowired
+    //private CardRepository cardRepository;
 
     // Game state
     private int lives = 3;
     private int score = 0;
-    private Card baseCard;
+    private int cardNumber = 0;
+    private List<Card> deck;
 
     // Create a new deck of shuffled cards
-    public List<Card> prepareDeck() {
-        cardRepository.deleteAll();
+    public Card prepareDeck() {
+        // Clear deck
+        //cardRepository.deleteAll();
+
+        // Reset game state
+        //lives = 3;
+        //score = 0;
+        //cardNumber = 0;
 
         // Generate all cards in deck
-        List<Card> deck = new ArrayList<>();
+        List<Card> newDeck = new ArrayList<>();
         String[] suits = {"Hearts", "Diamonds", "Clubs", "Spades"};
         String[] ranks = {"Two", "Three", "Four", "Five", "Six", "Seven",
                 "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace"};
@@ -56,16 +65,23 @@ public class GameService {
                 card.setSuit(suit);
                 card.setRank(rank);
                 card.setPower(power);
-                deck.add(card);
+                newDeck.add(card);
             }
         }
 
         // Shuffle the deck
-        Collections.shuffle(deck);
+        Collections.shuffle(newDeck);
 
-        cardRepository.saveAll(deck);
-        return deck;
+        deck = newDeck;
+        //cardRepository.saveAll(deck);
+
+        return deck.get(cardNumber);
     }
 
+    public Card nextCard() {
+        Card nextCard = deck.get(cardNumber);
+        cardNumber++;
+        return nextCard;
+    }
 }
 

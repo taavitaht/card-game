@@ -1,4 +1,4 @@
-package ee.taavi.card_game.controller;
+/*package ee.taavi.card_game.controller;
 
 import ee.taavi.card_game.entity.Card;
 import ee.taavi.card_game.repository.CardRepository;
@@ -17,4 +17,10 @@ public class CardController {
     public List<Card> getAllCards() {
         return cardRepository.findAll();
     }
-}
+
+    @DeleteMapping("cards")
+    public List<Card> deleteAllCards() {
+        cardRepository.deleteAll();
+        return cardRepository.findAll();
+    }
+}*/

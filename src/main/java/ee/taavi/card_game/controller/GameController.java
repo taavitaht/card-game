@@ -1,5 +1,6 @@
 package ee.taavi.card_game.controller;
 
+import ee.taavi.card_game.entity.GameResponse;
 import ee.taavi.card_game.service.GameService;
 import ee.taavi.card_game.entity.Card;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,31 +15,30 @@ public class GameController {
     private GameService gameService;
 
     @PostMapping("/start")
-    public Card startGame() {
-        List<Card> deck = gameService.prepareDeck();
-        Card baseCard = deck.get(0);
+    public GameResponse startGame() {
+        Card baseCard = gameService.prepareDeck();
+
+        // Initialize game state
+        gameService.setLives(3);
+        gameService.setScore(0);
+        gameService.setCardNumber(0);
+
+        // Build response
+        return new GameResponse(
+                gameService.getScore(),
+                gameService.getLives(),
+                "Game Started",
+                baseCard.cardName()
+        );
+    }
+
+    @PostMapping("/guess")
+    public Card guessCard() {
+        Card baseCard = gameService.nextCard();
 
         return baseCard;
-        // Return base card info as a response
-        //return new BaseCardResponse(baseCard.getSuit(),
-         //       baseCard.getRank(),
-          //      baseCard.getPower());
     }
 
-    // DTO for returning base card
-    public static class BaseCardResponse {
-        private String suit;
-        private String rank;
-        private int power;
 
-        public BaseCardResponse(String suit, String rank, int power) {
-            this.suit = suit;
-            this.rank = rank;
-            this.power = power;
-        }
 
-        public String getSuit() { return suit; }
-        public String getRank() { return rank; }
-        public int getPower() { return power; }
-    }
 }

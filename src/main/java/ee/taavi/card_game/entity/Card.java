@@ -10,14 +10,19 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "cards")
+//@Entity
+//@Table(name = "cards")
 public class Card {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    //private Long id;
     private String suit;
     private String rank;
     private int power;
+
+    public String cardName() {
+        return rank + " of " + suit;
+    }
+
 }
 
