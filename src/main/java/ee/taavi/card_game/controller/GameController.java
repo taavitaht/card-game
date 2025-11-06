@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class GameController {
@@ -21,7 +22,7 @@ public class GameController {
         // Initialize game state
         gameService.setLives(3);
         gameService.setScore(0);
-        gameService.setCardNumber(0);
+        gameService.setCardNumber(1);
 
         // Build response
         return new GameResponse(
@@ -33,12 +34,8 @@ public class GameController {
     }
 
     @PostMapping("/guess")
-    public Card guessCard() {
-        Card baseCard = gameService.nextCard();
+    public GameResponse guessCard(@RequestBody Map<String, String> request) {
 
-        return baseCard;
+        return gameService.guess(request.get("guess"));
     }
-
-
-
 }

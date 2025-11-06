@@ -1,7 +1,9 @@
 package ee.taavi.card_game.service;
 
+import ee.taavi.card_game.CardGameApplication;
 import ee.taavi.card_game.entity.Card;
 //import ee.taavi.card_game.repository.CardRepository;
+import ee.taavi.card_game.entity.GameResponse;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ public class GameService {
     private int score = 0;
     private int cardNumber = 0;
     private List<Card> deck;
+    private Card baseCard;
 
     // Create a new deck of shuffled cards
     public Card prepareDeck() {
@@ -58,7 +61,7 @@ public class GameService {
                     case "Jack":   power = 10; break;
                     case "Queen":  power = 10; break;
                     case "King":   power = 10; break;
-                    case "Ace":    power = 11; break;
+                    case "Ace":    power = 10; break;
                     default:       power = 0;  break;
                 }
 
@@ -73,6 +76,7 @@ public class GameService {
         Collections.shuffle(newDeck);
 
         deck = newDeck;
+        baseCard = deck.get(0);
         //cardRepository.saveAll(deck);
 
         return deck.get(cardNumber);
@@ -82,6 +86,43 @@ public class GameService {
         Card nextCard = deck.get(cardNumber);
         cardNumber++;
         return nextCard;
+    }
+
+    public GameResponse guess(String guess){
+        int previousPower = baseCard.getPower();
+        // Draw next card
+        baseCard = nextCard();
+        int newPower = baseCard.getPower();
+
+        // Compare
+        String message = "You guessed right!";
+        if("equal".equals(guess) && newPower == previousPower){
+            score++;
+        }
+        else if("higher".equals(guess) && newPower > previousPower){
+            score++;
+        }
+        else if("lower".equals(guess) && newPower < previousPower){
+            score++;
+        }
+        else {
+            lives--;
+            if (lives > 0) {
+                message = "You guessed wrong!";
+            }
+            else {
+                message = "Game over!";
+            }
+        }
+
+
+        // Genereate result
+        return new GameResponse(
+                score,
+                lives,
+                message,
+                baseCard.cardName()
+        );
     }
 }
 
