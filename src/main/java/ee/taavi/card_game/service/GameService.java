@@ -1,16 +1,16 @@
 package ee.taavi.card_game.service;
 
-import ee.taavi.card_game.CardGameApplication;
 import ee.taavi.card_game.entity.Card;
-//import ee.taavi.card_game.repository.CardRepository;
 import ee.taavi.card_game.entity.GameResponse;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -18,28 +18,34 @@ import java.util.List;
 @Service
 public class GameService {
 
-    //@Autowired
-    //private CardRepository cardRepository;
-
     // Game state
     private int lives = 3;
     private int score = 0;
     private int cardNumber = 0;
-    private List<Card> deck;
+    private List<Card> deck = new ArrayList<>();
     private Card baseCard;
+    private Date startTime;
+    private Date endTime;
+    private Duration gameTime;
+
+    // Initialize game
+    public Card resetGame(){
+
+        lives = 3;
+        score = 0;
+        cardNumber = 0;
+        startTime = new Date();
+
+        prepareDeck();
+
+        return dealCard();
+    }
 
     // Create a new deck of shuffled cards
-    public Card prepareDeck() {
-        // Clear deck
-        //cardRepository.deleteAll();
-
-        // Reset game state
-        //lives = 3;
-        //score = 0;
-        //cardNumber = 0;
+    public void prepareDeck() {
 
         // Generate all cards in deck
-        List<Card> newDeck = new ArrayList<>();
+        deck.clear();
         String[] suits = {"Hearts", "Diamonds", "Clubs", "Spades"};
         String[] ranks = {"Two", "Three", "Four", "Five", "Six", "Seven",
                 "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace"};
@@ -68,33 +74,40 @@ public class GameService {
                 card.setSuit(suit);
                 card.setRank(rank);
                 card.setPower(power);
-                newDeck.add(card);
+                deck.add(card);
             }
         }
 
         // Shuffle the deck
-        Collections.shuffle(newDeck);
+        Collections.shuffle(deck);
 
-        deck = newDeck;
         baseCard = deck.get(0);
-        //cardRepository.saveAll(deck);
-
-        return deck.get(cardNumber);
     }
 
-    public Card nextCard() {
-        Card nextCard = deck.get(cardNumber);
+    public Card dealCard() {
         cardNumber++;
-        return nextCard;
+        System.out.println("CardNumber : "+ cardNumber);
+        System.out.println("CardName : "+ deck.get(cardNumber).cardName());
+        baseCard = deck.get(cardNumber);
+        return baseCard;
     }
 
     public GameResponse guess(String guess){
+        if (lives <= 0){
+            return new GameResponse(
+                    score,
+                    lives,
+                    "Game is over!",
+                    ""
+            );
+        }
+
         int previousPower = baseCard.getPower();
         // Draw next card
-        baseCard = nextCard();
-        int newPower = baseCard.getPower();
+        int newPower = dealCard().getPower();
 
         // Compare
+        // Guess was correct
         String message = "You guessed right!";
         if("equal".equals(guess) && newPower == previousPower){
             score++;
@@ -105,18 +118,24 @@ public class GameService {
         else if("lower".equals(guess) && newPower < previousPower){
             score++;
         }
+
+        // Guess was wrong
         else {
             lives--;
             if (lives > 0) {
                 message = "You guessed wrong!";
             }
             else {
-                message = "Game over!";
+                message = "Game over! Enter your name to save this score";
+                endTime = new Date();
+                Instant startInstant = startTime.toInstant();
+                Instant endInstant = endTime.toInstant();
+                gameTime = Duration.between(startInstant, endInstant);
             }
         }
 
 
-        // Genereate result
+        // Genereate response
         return new GameResponse(
                 score,
                 lives,

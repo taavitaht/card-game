@@ -6,7 +6,6 @@ import ee.taavi.card_game.entity.Card;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,12 +16,7 @@ public class GameController {
 
     @PostMapping("/start")
     public GameResponse startGame() {
-        Card baseCard = gameService.prepareDeck();
-
-        // Initialize game state
-        gameService.setLives(3);
-        gameService.setScore(0);
-        gameService.setCardNumber(1);
+        Card baseCard = gameService.resetGame();
 
         // Build response
         return new GameResponse(
