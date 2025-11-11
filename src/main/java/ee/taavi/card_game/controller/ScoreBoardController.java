@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 public class ScoreBoardController {
 
     @Autowired
@@ -20,10 +21,10 @@ public class ScoreBoardController {
     private GameService gameService;
 
     @GetMapping("scoreboard")
-    public List<ScoreBoard> getAllScores(@RequestBody Map<String, String> request){
-        String name = request.get("name");
-        System.out.println("Name is: "+ name);
-        if(name != null && name != ""){
+    public List<ScoreBoard> getAllScores(@RequestParam String name){
+        // RequestParam?
+        //String name = request.get("name");
+        if(name != null && !name.isEmpty()){
             return scoreBoardRepository.findAllByName(name);
         }
         return scoreBoardRepository.findAll();
@@ -32,7 +33,7 @@ public class ScoreBoardController {
     @PostMapping("scoreboard")
     public List<ScoreBoard> addScore(@RequestBody Map<String, String> request){
         String name = request.get("name");
-        if (name == null || name == ""){
+        if (name == null || name.isEmpty()){
             System.out.println("No name!");
             return null;
         }

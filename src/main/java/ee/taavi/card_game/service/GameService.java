@@ -86,8 +86,8 @@ public class GameService {
 
     public Card dealCard() {
         cardNumber++;
-        System.out.println("CardNumber : "+ cardNumber);
-        System.out.println("CardName : "+ deck.get(cardNumber).cardName());
+        //System.out.println("CardNumber : "+ cardNumber);
+        //System.out.println("CardName : "+ deck.get(cardNumber).cardName());
         baseCard = deck.get(cardNumber);
         return baseCard;
     }
@@ -103,7 +103,6 @@ public class GameService {
         }
 
         int previousPower = baseCard.getPower();
-        // Draw next card
         int newPower = dealCard().getPower();
 
         // Compare
